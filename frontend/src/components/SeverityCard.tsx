@@ -6,28 +6,36 @@ import { useLang } from "@/lib/i18n";
 
 type Props = { result: TriageResult };
 
-const SEVERITY_CHIP: Record<string, string> = {
-  GREEN: "from-emerald-400 to-teal-500",
-  YELLOW: "from-amber-400 to-orange-500",
-  RED: "from-rose-500 to-red-700",
-  BLACK: "from-slate-500 to-slate-800",
+const SEVERITY_BAR: Record<string, string> = {
+  GREEN: "bg-emerald-700",
+  YELLOW: "bg-amber-500",
+  RED: "bg-red-700",
+  BLACK: "bg-slate-900",
+};
+
+const SEVERITY_RING: Record<string, string> = {
+  GREEN: "border-emerald-700",
+  YELLOW: "border-amber-500",
+  RED: "border-red-700",
+  BLACK: "border-slate-900",
 };
 
 export function SeverityCard({ result }: Props) {
   const { lang } = useLang();
   const meta = SEVERITY_META[result.severity];
-  const chip = SEVERITY_CHIP[result.severity] ?? "from-indigo-500 to-teal-500";
+  const bar = SEVERITY_BAR[result.severity] ?? "bg-ink";
+  const ring = SEVERITY_RING[result.severity] ?? "border-ink";
 
   return (
-    <div className="glass p-6 shadow-2xl">
+    <div className={`card border-2 ${ring} p-6`}>
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <span
-            className={`inline-block h-10 w-1.5 rounded-full bg-gradient-to-b ${chip}`}
+            className={`inline-block h-10 w-1.5 rounded-sm ${bar}`}
             aria-hidden
           />
           <div>
-            <div className="text-xs uppercase tracking-[0.2em] text-slate-500">
+            <div className="label !mb-0">
               {lang === "bn" ? "তীব্রতা স্তর" : "Severity level"}
             </div>
             <div className={`text-2xl font-bold ${meta.color}`}>
@@ -36,24 +44,26 @@ export function SeverityCard({ result }: Props) {
           </div>
         </div>
         <div className="text-right">
-          <div className="text-xs uppercase tracking-[0.2em] text-slate-500">
+          <div className="label !mb-0">
             {lang === "bn" ? "আত্মবিশ্বাস" : "Confidence"}
           </div>
-          <div className="gradient-text text-2xl font-bold">
+          <div className="text-2xl font-bold text-ink">
             {Math.round(result.confidence * 100)}%
           </div>
         </div>
       </div>
 
-      <p className="mt-4 text-sm leading-relaxed text-slate-700">
+      <hr className="divider my-4" />
+
+      <p className="text-sm leading-relaxed text-ink-soft">
         {result.rationale}
       </p>
 
       {result.warnings.length > 0 && (
-        <ul className="mt-4 space-y-1.5 border-t border-white/40 pt-3 text-xs text-slate-700">
+        <ul className="mt-4 space-y-1.5 border-t border-line pt-3 text-xs text-ink-soft">
           {result.warnings.map((w, i) => (
             <li key={i} className="flex gap-2">
-              <span className="text-amber-600">⚠</span>
+              <span className="font-bold text-ink">⚠</span>
               <span>{w}</span>
             </li>
           ))}

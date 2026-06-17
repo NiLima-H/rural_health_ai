@@ -11,17 +11,17 @@ export default function ResultsPage() {
 
   if (!result) {
     return (
-      <div className="glass p-10 text-center shadow-2xl">
+      <div className="card p-10 text-center">
         <div className="text-5xl">🩺</div>
-        <h1 className="mt-3 gradient-text text-2xl font-bold">
+        <h1 className="mt-3 text-2xl font-bold uppercase tracking-widest text-ink">
           {lang === "bn" ? "এখনও কোনো ফলাফল নেই" : "No triage result yet"}
         </h1>
-        <p className="mt-2 text-sm text-slate-700">
+        <p className="mt-2 text-sm text-ink-soft">
           {lang === "bn"
             ? "রোগীর তথ্য ও স্বাস্থ্য পরীক্ষা পূরণ করে ট্রায়াজ চালান।"
             : "Complete patient info and vitals, then run triage."}
         </p>
-        <Link href="/vitals" className="btn-primary mt-5 inline-block">
+        <Link href="/vitals" className="btn-primary mt-5 inline-flex">
           {lang === "bn" ? "স্বাস্থ্য পরীক্ষায় যান →" : "Go to Vitals →"}
         </Link>
       </div>
@@ -30,8 +30,8 @@ export default function ResultsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="glass-dark flex flex-wrap items-center justify-between gap-3 p-6 shadow-2xl">
-        <h1 className="gradient-text text-3xl font-bold">
+      <div className="card-strong flex flex-wrap items-center justify-between gap-3 p-6">
+        <h1 className="text-2xl font-bold uppercase tracking-widest">
           {lang === "bn" ? "ট্রায়াজ ফলাফল" : "Triage results"}
         </h1>
         <div className="flex gap-2">
@@ -40,7 +40,7 @@ export default function ResultsPage() {
           </button>
           <button
             onClick={reset}
-            className="rounded-lg border border-red-300/60 bg-red-50/70 px-3 py-1.5 text-sm font-medium text-red-700 shadow-sm backdrop-blur-md transition hover:bg-red-100"
+            className="inline-flex items-center justify-center gap-2 rounded-lg border border-ink bg-white px-3 py-1.5 text-sm font-semibold text-ink hover:bg-ink hover:text-bg"
           >
             {lang === "bn" ? "নতুন রোগী" : "New patient"}
           </button>
@@ -50,21 +50,21 @@ export default function ResultsPage() {
       <SeverityCard result={result} />
 
       <section className="grid gap-6 md:grid-cols-2">
-        <div className="glass p-5 shadow-2xl">
-          <h2 className="section-title mb-3">
+        <div className="card p-5">
+          <h2 className="section-title">
             {lang === "bn" ? "সম্ভাব্য রোগ নির্ণয়" : "Suggested diagnoses"}
           </h2>
-          <ul className="list-inside list-disc space-y-1 text-sm text-slate-800">
+          <ul className="list-inside list-disc space-y-1 text-sm text-ink">
             {result.diagnosisSuggestions.map((d, i) => (
               <li key={i}>{d}</li>
             ))}
           </ul>
         </div>
-        <div className="glass p-5 shadow-2xl">
-          <h2 className="section-title mb-3">
+        <div className="card p-5">
+          <h2 className="section-title">
             {lang === "bn" ? "প্রাথমিক চিকিৎসা" : "First aid advice"}
           </h2>
-          <ul className="list-inside list-disc space-y-1 text-sm text-slate-800">
+          <ul className="list-inside list-disc space-y-1 text-sm text-ink">
             {result.firstAid.map((d, i) => (
               <li key={i}>{d}</li>
             ))}
@@ -72,31 +72,28 @@ export default function ResultsPage() {
         </div>
       </section>
 
-      <section className="glass p-5 shadow-2xl">
-        <h2 className="section-title mb-3">
+      <section className="card p-5">
+        <h2 className="section-title">
           {lang === "bn" ? "রেফারেল সুপারিশ" : "Referral recommendation"}
         </h2>
         <div className="flex flex-wrap items-center gap-3 text-sm">
-          <span className="rounded-full bg-gradient-to-r from-indigo-500 to-teal-500 px-3 py-1 font-semibold text-white shadow">
+          <span className="chip chip-solid">
             {result.referral.level.replace("_", " ")}
           </span>
           {result.referral.facility && (
-            <span className="text-slate-800">→ {result.referral.facility}</span>
+            <span className="text-ink">→ {result.referral.facility}</span>
           )}
         </div>
-        <p className="mt-3 text-sm text-slate-700">{result.referral.rationale}</p>
+        <p className="mt-3 text-sm text-ink-soft">{result.referral.rationale}</p>
       </section>
 
-      <section className="glass p-5 shadow-2xl">
-        <h2 className="section-title mb-3">
+      <section className="card p-5">
+        <h2 className="section-title">
           {lang === "bn" ? "চিকিৎসা সত্তা" : "Extracted medical entities"}
         </h2>
         <div className="flex flex-wrap gap-2">
           {result.entities.map((e, i) => (
-            <span
-              key={i}
-              className="rounded-full border border-white/50 bg-white/70 px-3 py-1 text-xs text-slate-800 shadow-sm backdrop-blur-md"
-            >
+            <span key={i} className="chip">
               {e.symptom}
               {e.duration ? ` · ${e.duration}` : ""}
               {e.severity ? ` · ${e.severity}` : ""}
@@ -105,11 +102,11 @@ export default function ResultsPage() {
         </div>
       </section>
 
-      <details className="glass p-5 text-sm shadow-2xl">
-        <summary className="cursor-pointer font-semibold text-slate-700">
+      <details className="card p-5 text-sm">
+        <summary className="cursor-pointer font-bold text-ink">
           {lang === "bn" ? "কাঁচা ইনপুট" : "Raw intake & vitals"}
         </summary>
-        <pre className="mt-3 overflow-auto rounded-lg border border-white/40 bg-white/70 p-3 text-xs text-slate-800">
+        <pre className="mt-3 overflow-auto rounded-lg border border-line bg-white p-3 text-xs text-ink">
 {JSON.stringify({ intake, vitals, generatedAt: result.generatedAt }, null, 2)}
         </pre>
       </details>

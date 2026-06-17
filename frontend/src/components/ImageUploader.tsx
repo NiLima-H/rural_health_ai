@@ -30,12 +30,12 @@ export function ImageUploader({ onExtracted }: Props) {
 
   return (
     <div className="space-y-3">
-      <label className="group flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-indigo-300/70 bg-white/40 p-8 text-sm text-indigo-800 shadow-sm backdrop-blur-md transition hover:border-indigo-500 hover:bg-white/60">
+      <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-ink/60 bg-white p-8 text-sm text-ink hover:border-ink hover:bg-bg">
         <span className="text-3xl">📷</span>
-        <span className="text-base font-semibold">
+        <span className="text-base font-bold">
           {lang === "bn" ? "প্রেসক্রিপশন ছবি আপলোড করুন" : "Upload prescription image"}
         </span>
-        <span className="text-xs uppercase tracking-wide text-slate-500">
+        <span className="text-xs uppercase tracking-wide text-muted">
           JPG / PNG · max 8 MB
         </span>
         <input
@@ -51,16 +51,16 @@ export function ImageUploader({ onExtracted }: Props) {
         <img
           src={preview}
           alt="prescription"
-          className="max-h-48 rounded-lg border border-white/40 bg-white/60 object-contain p-2 shadow"
+          className="max-h-48 rounded-lg border border-line bg-white object-contain p-2 shadow-sm"
         />
       )}
       {busy && (
-        <div className="flex items-center gap-2 text-xs text-slate-600">
-          <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-indigo-500" />
+        <div className="flex items-center gap-2 text-xs text-ink-soft">
+          <span className="inline-block h-2 w-2 animate-pulse bg-ink" />
           {lang === "bn" ? "OCR চলছে..." : "Running OCR..."}
         </div>
       )}
-      {error && <div className="text-xs text-red-600">{error}</div>}
+      {error && <div className="text-xs text-red-700">{error}</div>}
     </div>
   );
 }

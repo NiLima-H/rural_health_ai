@@ -10,11 +10,11 @@ export default function PrescriptionPage() {
 
   return (
     <div className="space-y-6">
-      <div className="glass-dark p-6 shadow-2xl">
-        <h1 className="gradient-text text-3xl font-bold">
+      <div className="card-strong p-6">
+        <h1 className="text-2xl font-bold uppercase tracking-widest">
           {lang === "bn" ? "প্রেসক্রিপশন / রিপোর্ট স্ক্যান" : "Prescription / report scan"}
         </h1>
-        <p className="mt-1 text-sm text-indigo-100/80">
+        <p className="mt-1 text-sm opacity-80">
           {lang === "bn"
             ? "পুরনো প্রেসক্রিপশন বা রিপোর্টের ছবি আপলোড করুন — OCR থেকে পাওয়া টেক্সট মূল সমস্যার সাথে যুক্ত হবে।"
             : "Upload a photo of a previous prescription or report. OCR text is appended to the chief complaint for richer triage context."}
@@ -22,7 +22,7 @@ export default function PrescriptionPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <div className="glass p-6 shadow-2xl">
+        <div className="card p-6">
           <ImageUploader
             onExtracted={(text, entities) => {
               const merged = [intake.chiefComplaintText, text].filter(Boolean).join("\n\n");
@@ -34,12 +34,12 @@ export default function PrescriptionPage() {
             }}
           />
         </div>
-        <div className="glass p-6 shadow-2xl">
-          <h2 className="section-title mb-3">
+        <div className="card p-6">
+          <h2 className="section-title">
             {lang === "bn" ? "সংকলিত টেক্সট" : "Consolidated text"}
           </h2>
           <pre
-            className={`max-h-80 overflow-auto rounded-lg border border-white/40 bg-white/70 p-3 text-xs leading-relaxed text-slate-800 ${
+            className={`max-h-80 overflow-auto rounded-lg border border-line bg-white p-3 text-xs leading-relaxed text-ink ${
               lang === "bn" ? "bn" : ""
             }`}
           >

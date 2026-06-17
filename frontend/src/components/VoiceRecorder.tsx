@@ -66,18 +66,18 @@ export function VoiceRecorder({ onTranscript }: Props) {
         <button
           type="button"
           onClick={stop}
-          className="inline-flex animate-pulse items-center gap-2 rounded-lg bg-gradient-to-r from-rose-500 to-red-700 px-4 py-2 text-sm font-semibold text-white shadow-lg"
+          className="inline-flex animate-pulse items-center gap-2 rounded-lg border border-ink bg-ink px-4 py-2 text-sm font-semibold text-bg"
         >
           ◼ {lang === "bn" ? "থামান" : "Stop"}
         </button>
       )}
       {busy && (
-        <span className="flex items-center gap-2 text-xs text-slate-600">
-          <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-indigo-500" />
+        <span className="flex items-center gap-2 text-xs text-ink-soft">
+          <span className="inline-block h-2 w-2 animate-pulse bg-ink" />
           {lang === "bn" ? "ট্রান্সক্রাইব হচ্ছে..." : "Transcribing..."}
         </span>
       )}
-      {error && <span className="text-xs text-red-600">{error}</span>}
+      {error && <span className="text-xs text-red-700">{error}</span>}
     </div>
   );
 }

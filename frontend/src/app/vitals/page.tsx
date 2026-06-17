@@ -30,23 +30,23 @@ export default function VitalsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="glass-dark p-6 shadow-2xl">
-        <h1 className="gradient-text text-3xl font-bold">
+      <div className="card-strong p-6">
+        <h1 className="text-2xl font-bold uppercase tracking-widest">
           {lang === "bn" ? "স্বাস্থ্য পরীক্ষা" : "Vitals"}
         </h1>
-        <p className="mt-1 text-sm text-indigo-100/80">
+        <p className="mt-1 text-sm opacity-80">
           {lang === "bn"
             ? "প্রাপ্ত মানগুলো লিখুন। অস্বাভাবিক মান স্বয়ংক্রিয়ভাবে চিহ্নিত হবে।"
             : "Enter measured values. Out-of-range values are flagged automatically."}
         </p>
       </div>
 
-      <div className="glass p-6 shadow-2xl">
+      <div className="card p-6">
         <VitalsForm value={vitals} onChange={setVitals} />
       </div>
 
       {error && (
-        <div className="rounded-lg border border-red-200/60 bg-red-50/80 p-3 text-sm text-red-700 shadow-sm backdrop-blur-md">
+        <div className="rounded-lg border border-red-700 bg-white p-3 text-sm text-red-700">
           {error}
         </div>
       )}
@@ -54,7 +54,7 @@ export default function VitalsPage() {
       <div className="flex items-center justify-between">
         <button
           onClick={() => router.push("/")}
-          className="text-sm text-slate-200/80 hover:text-white"
+          className="text-sm font-semibold text-ink-soft hover:text-ink"
         >
           ← {lang === "bn" ? "রোগীর তথ্য" : "Patient info"}
         </button>

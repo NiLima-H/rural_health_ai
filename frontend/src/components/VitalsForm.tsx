@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Vitals } from "@/lib/types";
 import { analyzeVitals, levelClass } from "@/lib/vitals";
 import { useLang } from "@/lib/i18n";
@@ -38,17 +37,17 @@ export function VitalsForm({ value, onChange, onSubmit }: Props) {
           return (
             <label
               key={f.key}
-              className={`rounded-lg border p-3 text-sm shadow-sm transition backdrop-blur-md ${
+              className={`rounded-lg border p-3 text-sm shadow-sm transition ${
                 flag
                   ? levelClass(flag.level)
-                  : "border-white/40 bg-white/70 text-slate-800"
+                  : "border-line bg-white text-ink"
               }`}
             >
               <div className="mb-1 flex items-center justify-between">
-                <span className="font-semibold text-slate-700">
+                <span className="font-semibold text-ink">
                   {lang === "bn" ? f.labelBn : f.label}
                 </span>
-                <span className="text-xs uppercase tracking-wide text-slate-400">
+                <span className="text-xs uppercase tracking-wide text-muted">
                   {f.unit}
                 </span>
               </div>
@@ -60,7 +59,7 @@ export function VitalsForm({ value, onChange, onSubmit }: Props) {
                 max={f.max}
                 value={value[f.key] ?? ""}
                 onChange={(e) => set(f.key, e.target.value)}
-                className="w-full bg-transparent text-lg font-semibold text-slate-900 outline-none placeholder:text-slate-400"
+                className="w-full bg-transparent text-lg font-bold text-ink outline-none placeholder:text-muted"
                 placeholder="—"
               />
               {flag && (
