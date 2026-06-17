@@ -62,45 +62,157 @@ async def _call_puku(messages: list[dict]) -> str | None:
         return None
 
 
-async def _call_openai(messages: list[dict]) -> str:
+async def _call_openai(messages: list[dict]) -> str | None:
     from openai import AsyncOpenAI
 
-    client = AsyncOpenAI(api_key=settings.openai_api_key)
-    resp = await client.chat.completions.create(
-        model=settings.openai_model,
-        messages=messages,
-        temperature=0.2,
-        response_format={"type": "json_object"},
-    )
-    return resp.choices[0].message.content or "{}"
+    try:
+        client = AsyncOpenAI(api_key=settings.openai_api_key)
+        resp = await client.chat.completions.create(
+            model=settings.openai_model,
+            messages=messages,
+            temperature=0.2,
+            response_format={"type": "json_object"},
+        )
+        return resp.choices[0].message.content or "{}"
+    except Exception as e:
+        log.warning("OpenAI call failed, falling back to heuristic: %s", e)
+        return None
 
 
 def _heuristic_triage(intake: PatientIntake, vitals: Vitals, base_warnings: list[str]) -> TriageResult:
-    """Offline fallback when no AI provider is configured."""
+    """Offline fallback when no AI provider is configured or LLM call fails.
+
+    Uses a small symptom dictionary (English + Bengali) plus vital-sign rules
+    to produce a usable triage recommendation. Conservative — when in doubt
+    it escalates to YELLOW/RED.
+    """
     from datetime import datetime
 
     sev: Severity = "GREEN"
-    diagnosis = ["Unspecified complaint — needs clinician review"]
-    first_aid = ["Reassure patient, monitor symptoms, encourage fluids and rest."]
-    warnings = list(base_warnings)
+    diagnosis: list[str] = ["Unspecified complaint — needs clinician review"]
+    first_aid: list[str] = ["Reassure patient, monitor symptoms, encourage fluids and rest."]
+    warnings: list[str] = list(base_warnings)
     conf = 0.5
     referral_level: Referral = Referral(
-        level="primary_clinic", facility="Upazila Health Complex",
-        rationale="Symptoms require clinician evaluation."
+        level="primary_clinic",
+        facility="Upazila Health Complex",
+        rationale="Symptoms require clinician evaluation.",
     )
 
     text = (intake.chiefComplaintText or "").lower()
-    if "অজ্ঞান" in text or "unconscious" in text or "নিঃশ্বাস বন্ধ" in text or "not breathing" in text:
-        sev = "RED"
-        diagnosis = ["Loss of consciousness / respiratory arrest"]
-        first_aid = ["Place in recovery position, clear airway, prepare referral NOW."]
-        referral_level = Referral(level="icu", rationale="Life-threatening signs.")
-        conf = 0.9
+    bn = (intake.chiefComplaintText or "")
 
-    if any(w for w in warnings if "critical" in w or "severe" in w):
+    # ----- RED: life-threatening patterns -----
+    red_patterns = [
+        ("unconscious", "অজ্ঞান", "Loss of consciousness"),
+        ("not breathing", "নিঃশ্বাস বন্ধ", "Respiratory arrest"),
+        ("no pulse", "নাড়ি বন্ধ", "Cardiac arrest"),
+        ("severe bleeding", "অতিরিক্ত রক্তপাত", "Hemorrhagic shock"),
+        ("stroke", "পক্ষাঘাত", "Suspected stroke (FAST positive)"),
+        ("fits", "খিঁচুনি", "Active seizure"),
+        (" seizure", "খিঁচুনি", "Active seizure"),
+        ("poisoning", "বিষক্রিয়া", "Suspected poisoning"),
+        ("snake bite", "সাপে কামড়", "Snake envenomation"),
+    ]
+    for en, bn_word, dx in red_patterns:
+        if en in text or bn_word in bn:
+            sev = "RED"
+            diagnosis = [dx]
+            first_aid = [
+                "Keep airway clear, place in recovery position if unconscious.",
+                "Do not give food or water.",
+                "Arrange IMMEDIATE transfer to district hospital ICU.",
+            ]
+            referral_level = Referral(
+                level="icu",
+                facility="District Hospital ICU",
+                rationale=f"Life-threatening pattern detected: {dx}.",
+            )
+            conf = 0.85
+            break
+
+    # ----- RED: chest pain suggestive of MI -----
+    chest_pain = ("chest pain" in text or "বুকে ব্যথা" in bn or "বুক ব্যথা" in bn)
+    red_flags = (
+        ("radiat" in text or "বাম হাত" in bn)
+        or ("sweating" in text or "ঘাম" in bn)
+        or ("shortness of breath" in text or "শ্বাসকষ্ট" in bn)
+    )
+    if chest_pain and red_flags:
         sev = "RED"
-        referral_level = Referral(level="icu", rationale="Critical vital sign abnormality.")
-        conf = max(conf, 0.85)
+        diagnosis = ["Suspected acute myocardial infarction"]
+        first_aid = [
+            "Sit patient upright, give 300 mg chewable aspirin if not allergic.",
+            "Keep warm, reassure, do not let patient walk.",
+            "Refer to district hospital immediately — call ambulance.",
+        ]
+        referral_level = Referral(
+            level="icu",
+            facility="District Hospital (cardiac care)",
+            rationale="Chest pain with red-flag features suggests acute coronary syndrome.",
+        )
+        conf = max(conf, 0.9)
+
+    # ----- YELLOW: urgent but not immediately life-threatening -----
+    if sev == "GREEN":
+        yellow_patterns = [
+            ("fever", "জ্বর", "Febrile illness"),
+            ("vomiting", "বমি", "Acute gastroenteritis"),
+            ("diarr", "ডায়রিয়া", "Acute diarrhea"),
+            ("abdominal pain", "পেটে ব্যথা", "Acute abdomen"),
+            ("difficulty breathing", "শ্বাসকষ্ট", "Dyspnea"),
+            ("asthma", "হাঁপানি", "Asthma exacerbation"),
+            ("burn", "পোড়া", "Burn injury"),
+            ("fracture", "হাড় ভাঙা", "Suspected fracture"),
+            ("headache", "মাথাব্যথা", "Severe headache"),
+            ("pregnant", "গর্ভবতী", "Pregnancy-related complaint"),
+        ]
+        for en, bn_word, dx in yellow_patterns:
+            if en in text or bn_word in bn:
+                sev = "YELLOW"
+                diagnosis = [dx]
+                first_aid = [
+                    "Monitor vitals every 15 minutes.",
+                    "Keep patient hydrated; give ORS if diarrhea/vomiting.",
+                    "Refer to Upazila Health Complex within 4 hours.",
+                ]
+                referral_level = Referral(
+                    level="primary_clinic",
+                    facility="Upazila Health Complex",
+                    rationale=f"{dx} — needs clinician review within hours.",
+                )
+                conf = 0.7
+                break
+
+    # ----- Vitals escalation override -----
+    if any(w for w in warnings if "critical" in w or "severe" in w or "danger" in w):
+        sev = "RED"
+        referral_level = Referral(
+            level="icu",
+            facility="District Hospital",
+            rationale="Critical vital sign abnormality detected.",
+        )
+        conf = max(conf, 0.9)
+
+    if sev == "GREEN" and any(w for w in warnings if "warn" in w or "abnormal" in w):
+        sev = "YELLOW"
+        referral_level = Referral(
+            level="primary_clinic",
+            facility="Upazila Health Complex",
+            rationale="Abnormal vitals — needs clinician review.",
+        )
+        conf = max(conf, 0.65)
+
+    # ----- Pregnancy caution -----
+    if intake.pregnancy and intake.pregnancy != "no" and sev == "GREEN":
+        sev = "YELLOW"
+        warnings.append("Pregnancy flagged — refer for obstetric review.")
+
+    rationale = "Heuristic offline triage"
+    if settings.puku_api_key or settings.openai_api_key:
+        rationale += " (LLM call failed — using fallback rules)"
+    else:
+        rationale += " — no AI key configured. Set PUKU_API_KEY or OPENAI_API_KEY for richer reasoning."
 
     return TriageResult(
         severity=sev,
@@ -109,7 +221,7 @@ def _heuristic_triage(intake: PatientIntake, vitals: Vitals, base_warnings: list
         firstAid=first_aid,
         referral=referral_level,
         entities=[MedicalEntity(symptom=intake.chiefComplaintText or "complaint")],
-        rationale="Heuristic offline triage — enable Puku AI / OpenAI for higher accuracy.",
+        rationale=rationale,
         warnings=warnings,
         generatedAt=datetime.utcnow().isoformat() + "Z",
     )
