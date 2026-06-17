@@ -1,0 +1,172 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useSession } from "@/lib/store";
+import { useLang } from "@/lib/i18n";
+import { VoiceRecorder } from "@/components/VoiceRecorder";
+
+export default function Home() {
+  const { intake, setIntake } = useSession();
+  const { lang } = useLang();
+  const router = useRouter();
+
+  return (
+    <div className="space-y-8">
+      <section className="rounded-3xl bg-gradient-to-br from-emerald-600 to-teal-700 p-8 text-white shadow-lg">
+        <h1 className="text-3xl font-bold md:text-4xl">
+          {lang === "bn" ? "গ্রামীণ স্বাস্থ্য ট্রায়াজ" : "RuralCare Triage"}
+        </h1>
+        <p className="mt-2 max-w-2xl text-emerald-50/90">
+          {lang === "bn"
+            ? "রোগীর তথ্য, কণ্ঠস্বর, প্রেসক্রিপশন ও স্বাস্থ্য পরীক্ষার ভিত্তিতে AI-চালিত ট্রায়াজ।"
+            : "AI-driven triage using patient history, voice, prescriptions, and vitals — built for rural clinics in Bangladesh and beyond."}
+        </p>
+      </section>
+
+      <section className="grid gap-6 md:grid-cols-2">
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h2 className="mb-4 text-lg font-semibold text-slate-800">
+            {lang === "bn" ? "রোগীর তথ্য" : "Patient information"}
+          </h2>
+          <div className="grid grid-cols-2 gap-3 text-sm">
+            <Field
+              label={lang === "bn" ? "নাম" : "Name"}
+              value={intake.name || ""}
+              onChange={(v) => setIntake({ name: v })}
+            />
+            <Field
+              label={lang === "bn" ? "বয়স" : "Age"}
+              type="number"
+              value={intake.age ?? ""}
+              onChange={(v) => setIntake({ age: v ? Number(v) : undefined })}
+            />
+            <Field
+              label={lang === "bn" ? "মোবাইল" : "Phone"}
+              value={intake.phone || ""}
+              onChange={(v) => setIntake({ phone: v })}
+            />
+            <Field
+              label={lang === "bn" ? "গ্রাম" : "Village"}
+              value={intake.village || ""}
+              onChange={(v) => setIntake({ village: v })}
+            />
+            <div className="col-span-2">
+              <label className="mb-1 block text-xs font-medium text-slate-500">
+                {lang === "bn" ? "লিঙ্গ" : "Sex"}
+              </label>
+              <select
+                value={intake.sex || ""}
+                onChange={(e) =>
+                  setIntake({ sex: (e.target.value || undefined) as any })
+                }
+                className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm"
+              >
+                <option value="">—</option>
+                <option value="male">{lang === "bn" ? "পুরুষ" : "Male"}</option>
+                <option value="female">{lang === "bn" ? "মহিলা" : "Female"}</option>
+                <option value="other">{lang === "bn" ? "অন্যান্য" : "Other"}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h2 className="mb-4 text-lg font-semibold text-slate-800">
+            {lang === "bn" ? "প্রধান সমস্যা" : "Chief complaint"}
+          </h2>
+          <div className="mb-3 flex items-center justify-between">
+            <label className="text-xs font-medium text-slate-500">
+              {lang === "bn" ? "লিখুন বা বলুন" : "Type or speak"}
+            </label>
+            <VoiceRecorder
+              onTranscript={(t) => setIntake({ chiefComplaintText: t })}
+            />
+          </div>
+          <textarea
+            value={intake.chiefComplaintText || ""}
+            onChange={(e) => setIntake({ chiefComplaintText: e.target.value })}
+            rows={5}
+            placeholder={
+              lang === "bn"
+                ? "যেমন: ৩ দিন ধরে জ্বর ও কাশি..."
+                : "e.g., Fever and cough for 3 days..."
+            }
+            className={`w-full rounded-lg border border-slate-200 bg-white p-3 text-sm shadow-inner outline-none focus:border-emerald-400 ${
+              lang === "bn" ? "bn" : ""
+            }`}
+          />
+          <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
+            <Field
+              label={lang === "bn" ? "কত দিন ধরে" : "Duration (days)"}
+              type="number"
+              value={intake.durationDays ?? ""}
+              onChange={(v) =>
+                setIntake({ durationDays: v ? Number(v) : undefined })
+              }
+            />
+            <Field
+              label={lang === "bn" ? "গর্ভবতী?" : "Pregnant?"}
+              value={
+                intake.pregnancy === undefined
+                  ? ""
+                  : intake.pregnancy
+                  ? lang === "bn"
+                    ? "হ্যাঁ"
+                    : "Yes"
+                  : lang === "bn"
+                  ? "না"
+                  : "No"
+              }
+              onChange={(v) =>
+                setIntake({
+                  pregnancy:
+                    v.toLowerCase().startsWith("y") ||
+                    v === "হ্যাঁ"
+                      ? true
+                      : v.toLowerCase().startsWith("n") || v === "না"
+                      ? false
+                      : undefined,
+                })
+              }
+            />
+          </div>
+        </div>
+      </section>
+
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <button
+          onClick={() => router.push("/vitals")}
+          className="rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white shadow hover:bg-emerald-700"
+        >
+          {lang === "bn" ? "পরবর্তী: স্বাস্থ্য পরীক্ষা →" : "Next: Vitals →"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function Field({
+  label,
+  value,
+  onChange,
+  type = "text",
+}: {
+  label: string;
+  value: string | number;
+  onChange: (v: string) => void;
+  type?: string;
+}) {
+  return (
+    <label className="block">
+      <span className="mb-1 block text-xs font-medium text-slate-500">
+        {label}
+      </span>
+      <input
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm outline-none focus:border-emerald-400"
+      />
+    </label>
+  );
+}
