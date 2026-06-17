@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSession } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
 import { SeverityCard } from "@/components/SeverityCard";
+import { AuthGuard } from "@/components/AuthGuard";
 
 export default function ResultsPage() {
   const { result, intake, vitals, reset } = useSession();
@@ -11,25 +12,28 @@ export default function ResultsPage() {
 
   if (!result) {
     return (
-      <div className="card p-10 text-center">
-        <div className="text-5xl">🩺</div>
-        <h1 className="mt-3 text-2xl font-bold uppercase tracking-widest text-ink">
-          {lang === "bn" ? "এখনও কোনো ফলাফল নেই" : "No triage result yet"}
-        </h1>
-        <p className="mt-2 text-sm text-ink-soft">
-          {lang === "bn"
-            ? "রোগীর তথ্য ও স্বাস্থ্য পরীক্ষা পূরণ করে ট্রায়াজ চালান।"
-            : "Complete patient info and vitals, then run triage."}
-        </p>
-        <Link href="/vitals" className="btn-primary mt-5 inline-flex">
-          {lang === "bn" ? "স্বাস্থ্য পরীক্ষায় যান →" : "Go to Vitals →"}
-        </Link>
-      </div>
+      <AuthGuard>
+        <div className="card p-10 text-center">
+          <div className="text-5xl">🩺</div>
+          <h1 className="mt-3 text-2xl font-bold uppercase tracking-widest text-ink">
+            {lang === "bn" ? "এখনও কোনো ফলাফল নেই" : "No triage result yet"}
+          </h1>
+          <p className="mt-2 text-sm text-ink-soft">
+            {lang === "bn"
+              ? "রোগীর তথ্য ও স্বাস্থ্য পরীক্ষা পূরণ করে ট্রায়াজ চালান।"
+              : "Complete patient info and vitals, then run triage."}
+          </p>
+          <Link href="/vitals" className="btn-primary mt-5 inline-flex">
+            {lang === "bn" ? "স্বাস্থ্য পরীক্ষায় যান →" : "Go to Vitals →"}
+          </Link>
+        </div>
+      </AuthGuard>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <AuthGuard>
+      <div className="space-y-6">
       <div className="card-strong flex flex-wrap items-center justify-between gap-3 p-6">
         <h1 className="text-2xl font-bold uppercase tracking-widest">
           {lang === "bn" ? "ট্রায়াজ ফলাফল" : "Triage results"}
@@ -111,5 +115,6 @@ export default function ResultsPage() {
         </pre>
       </details>
     </div>
+    </AuthGuard>
   );
 }

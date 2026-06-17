@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
 import { VoiceRecorder } from "@/components/VoiceRecorder";
+import { AuthGuard } from "@/components/AuthGuard";
 
 export default function HomePage() {
   const { intake, setIntake } = useSession();
@@ -18,8 +19,9 @@ export default function HomePage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="card-strong p-6">
+    <AuthGuard>
+      <div className="space-y-6">
+        <div className="card-strong p-6">
         <h1 className="text-2xl font-bold uppercase tracking-widest">
           {lang === "bn" ? "রোগীর তথ্য" : "Patient Intake"}
         </h1>
@@ -151,6 +153,7 @@ export default function HomePage() {
           {lang === "bn" ? "পরবর্তী: স্বাস্থ্য পরীক্ষা" : "Next: Vitals"} →
         </button>
       </div>
-    </div>
+      </div>
+    </AuthGuard>
   );
 }

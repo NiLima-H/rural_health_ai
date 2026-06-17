@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useLang } from "@/lib/i18n";
+import { useAuth } from "@/lib/auth";
 
 const links = [
   { href: "/", en: "Patient", bn: "রোগী" },
@@ -13,11 +14,18 @@ const links = [
 
 export function NavBar() {
   const { lang, setLang } = useLang();
+  const { user, logout } = useAuth();
   const path = usePathname();
+  const router = useRouter();
+
+  function onLogout() {
+    logout();
+    router.replace("/login");
+  }
 
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-bg/95 backdrop-blur">
-      <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
+      <div className="mx-auto flex max-w-5xl items-center justify-between gap-2 px-4 py-3">
         <Link href="/" className="flex items-center gap-2 font-bold uppercase tracking-widest text-ink">
           <span className="flex h-7 w-7 items-center justify-center border border-ink bg-ink text-bg">
             ✚
@@ -44,23 +52,44 @@ export function NavBar() {
           })}
         </nav>
 
-        <div className="flex items-center gap-1 border border-line bg-white p-0.5 text-xs font-bold">
-          <button
-            onClick={() => setLang("en")}
-            className={`px-2 py-1 ${
-              lang === "en" ? "bg-ink text-bg" : "text-ink-soft"
-            }`}
-          >
-            EN
-          </button>
-          <button
-            onClick={() => setLang("bn")}
-            className={`px-2 py-1 ${
-              lang === "bn" ? "bg-ink text-bg" : "text-ink-soft"
-            }`}
-          >
-            বাংলা
-          </button>
+        <div className="flex items-center gap-2">
+          {user ? (
+            <>
+              <span className="hidden text-xs font-semibold uppercase tracking-wider sm:inline">
+                {user.full_name || user.username}
+              </span>
+              <button
+                onClick={onLogout}
+                className="btn-ghost text-xs"
+                title="Sign out"
+              >
+                {lang === "bn" ? "লগআউট" : "Log out"}
+              </button>
+            </>
+          ) : (
+            <Link href="/login" className="btn-primary text-xs">
+              {lang === "bn" ? "লগ ইন" : "Log in"}
+            </Link>
+          )}
+
+          <div className="flex items-center gap-1 border border-line bg-white p-0.5 text-xs font-bold">
+            <button
+              onClick={() => setLang("en")}
+              className={`px-2 py-1 ${
+                lang === "en" ? "bg-ink text-bg" : "text-ink-soft"
+              }`}
+            >
+              EN
+            </button>
+            <button
+              onClick={() => setLang("bn")}
+              className={`px-2 py-1 ${
+                lang === "bn" ? "bg-ink text-bg" : "text-ink-soft"
+              }`}
+            >
+              বাংলা
+            </button>
+          </div>
         </div>
       </div>
     </header>

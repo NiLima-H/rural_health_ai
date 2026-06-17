@@ -21,6 +21,8 @@ from .ai import run_triage
 from .transcribe import transcribe_audio
 from .ocr import ocr_image
 from .pdf import render_triage_pdf
+from .auth import router as auth_router, get_current_user, seed_default_users
+from .db import User
 
 app = FastAPI(title="RuralCare Triage API", version="1.0.0")
 
@@ -37,6 +39,15 @@ app.add_middleware(
 def _startup() -> None:
     init_db()
     os.makedirs(settings.pdf_dir, exist_ok=True)
+    # seed default workers once
+    db = next(get_session())
+    try:
+        seed_default_users(db)
+    finally:
+        db.close()
+
+
+app.include_router(auth_router)
 
 
 @app.get("/health")
@@ -48,6 +59,7 @@ def health() -> dict:
 async def transcribe(
     file: UploadFile = File(...),
     lang: str = Form("en"),
+    _user: User = Depends(get_current_user),
 ) -> TranscribeResponse:
     data = await file.read()
     if not data:
@@ -57,7 +69,11 @@ async def transcribe(
 
 
 @app.post("/ocr", response_model=OCRResponse)
-async def ocr(file: UploadFile = File(...), lang: str = Form("en")) -> OCRResponse:
+async def ocr(
+    file: UploadFile = File(...),
+    lang: str = Form("en"),
+    _user: User = Depends(get_current_user),
+) -> OCRResponse:
     data = await file.read()
     if not data:
         raise HTTPException(400, "Empty image upload")
@@ -66,7 +82,11 @@ async def ocr(file: UploadFile = File(...), lang: str = Form("en")) -> OCRRespon
 
 
 @app.post("/triage", response_model=TriageResult)
-async def triage(req: TriageRequest, db: Session = Depends(get_session)) -> TriageResult:
+async def triage(
+    req: TriageRequest,
+    db: Session = Depends(get_session),
+    _user: User = Depends(get_current_user),
+) -> TriageResult:
     _, warnings = vitals_alerts(req.vitals)
     result = await run_triage(req.intake, req.vitals, warnings)
 

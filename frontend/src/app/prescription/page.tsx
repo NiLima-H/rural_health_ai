@@ -3,13 +3,15 @@
 import { useSession } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
 import { ImageUploader } from "@/components/ImageUploader";
+import { AuthGuard } from "@/components/AuthGuard";
 
 export default function PrescriptionPage() {
   const { intake, setIntake } = useSession();
   const { lang } = useLang();
 
   return (
-    <div className="space-y-6">
+    <AuthGuard>
+      <div className="space-y-6">
       <div className="card-strong p-6">
         <h1 className="text-2xl font-bold uppercase tracking-widest">
           {lang === "bn" ? "প্রেসক্রিপশন / রিপোর্ট স্ক্যান" : "Prescription / report scan"}
@@ -47,6 +49,7 @@ export default function PrescriptionPage() {
           </pre>
         </div>
       </div>
-    </div>
+      </div>
+    </AuthGuard>
   );
 }

@@ -11,6 +11,17 @@ from .config import settings
 Base = declarative_base()
 
 
+class User(Base):
+    __tablename__ = "users"
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    username = Column(String, unique=True, nullable=False, index=True)
+    password_hash = Column(String, nullable=False)
+    full_name = Column(String, nullable=True)
+    role = Column(String, default="clinician")
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
 class Patient(Base):
     __tablename__ = "patients"
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
