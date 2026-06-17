@@ -12,11 +12,11 @@ export default function Home() {
 
   return (
     <div className="space-y-8">
-      <section className="rounded-3xl bg-gradient-to-br from-emerald-600 to-teal-700 p-8 text-white shadow-lg">
-        <h1 className="text-3xl font-bold md:text-4xl">
+      <section className="glass-dark p-8 shadow-2xl">
+        <h1 className="text-3xl font-bold tracking-wide md:text-4xl gradient-text">
           {lang === "bn" ? "গ্রামীণ স্বাস্থ্য ট্রায়াজ" : "RuralCare Triage"}
         </h1>
-        <p className="mt-2 max-w-2xl text-emerald-50/90">
+        <p className="mt-3 max-w-2xl text-indigo-100/90 leading-relaxed">
           {lang === "bn"
             ? "রোগীর তথ্য, কণ্ঠস্বর, প্রেসক্রিপশন ও স্বাস্থ্য পরীক্ষার ভিত্তিতে AI-চালিত ট্রায়াজ।"
             : "AI-driven triage using patient history, voice, prescriptions, and vitals — built for rural clinics in Bangladesh and beyond."}
@@ -24,9 +24,9 @@ export default function Home() {
       </section>
 
       <section className="grid gap-6 md:grid-cols-2">
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="mb-4 text-lg font-semibold text-slate-800">
-            {lang === "bn" ? "রোগীর তথ্য" : "Patient information"}
+        <div className="glass p-6">
+          <h2 className="mb-4 text-lg font-bold tracking-wide text-slate-800">
+            {lang === "bn" ? "রোগীর তথ্য" : "Patient Information"}
           </h2>
           <div className="grid grid-cols-2 gap-3 text-sm">
             <Field
@@ -51,7 +51,7 @@ export default function Home() {
               onChange={(v) => setIntake({ village: v })}
             />
             <div className="col-span-2">
-              <label className="mb-1 block text-xs font-medium text-slate-500">
+              <label className="label">
                 {lang === "bn" ? "লিঙ্গ" : "Sex"}
               </label>
               <select
@@ -59,7 +59,7 @@ export default function Home() {
                 onChange={(e) =>
                   setIntake({ sex: (e.target.value || undefined) as any })
                 }
-                className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm"
+                className="field"
               >
                 <option value="">—</option>
                 <option value="male">{lang === "bn" ? "পুরুষ" : "Male"}</option>
@@ -70,12 +70,12 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="mb-4 text-lg font-semibold text-slate-800">
-            {lang === "bn" ? "প্রধান সমস্যা" : "Chief complaint"}
+        <div className="glass p-6">
+          <h2 className="mb-4 text-lg font-bold tracking-wide text-slate-800">
+            {lang === "bn" ? "প্রধান সমস্যা" : "Chief Complaint"}
           </h2>
           <div className="mb-3 flex items-center justify-between">
-            <label className="text-xs font-medium text-slate-500">
+            <label className="text-xs font-semibold uppercase tracking-wider text-slate-500">
               {lang === "bn" ? "লিখুন বা বলুন" : "Type or speak"}
             </label>
             <VoiceRecorder
@@ -91,9 +91,7 @@ export default function Home() {
                 ? "যেমন: ৩ দিন ধরে জ্বর ও কাশি..."
                 : "e.g., Fever and cough for 3 days..."
             }
-            className={`w-full rounded-lg border border-slate-200 bg-white p-3 text-sm shadow-inner outline-none focus:border-emerald-400 ${
-              lang === "bn" ? "bn" : ""
-            }`}
+            className={`field ${lang === "bn" ? "bn" : ""}`}
           />
           <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
             <Field
@@ -120,8 +118,7 @@ export default function Home() {
               onChange={(v) =>
                 setIntake({
                   pregnancy:
-                    v.toLowerCase().startsWith("y") ||
-                    v === "হ্যাঁ"
+                    v.toLowerCase().startsWith("y") || v === "হ্যাঁ"
                       ? true
                       : v.toLowerCase().startsWith("n") || v === "না"
                       ? false
@@ -136,7 +133,7 @@ export default function Home() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <button
           onClick={() => router.push("/vitals")}
-          className="rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white shadow hover:bg-emerald-700"
+          className="btn-primary"
         >
           {lang === "bn" ? "পরবর্তী: স্বাস্থ্য পরীক্ষা →" : "Next: Vitals →"}
         </button>
@@ -158,14 +155,12 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="mb-1 block text-xs font-medium text-slate-500">
-        {label}
-      </span>
+      <span className="label">{label}</span>
       <input
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm outline-none focus:border-emerald-400"
+        className="field"
       />
     </label>
   );

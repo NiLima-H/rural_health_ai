@@ -30,12 +30,14 @@ export function ImageUploader({ onExtracted }: Props) {
 
   return (
     <div className="space-y-3">
-      <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-emerald-300 bg-emerald-50/40 p-6 text-sm text-emerald-800 hover:bg-emerald-50">
-        <span className="text-2xl">📷</span>
-        <span className="font-medium">
+      <label className="group flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-indigo-300/70 bg-white/40 p-8 text-sm text-indigo-800 shadow-sm backdrop-blur-md transition hover:border-indigo-500 hover:bg-white/60">
+        <span className="text-3xl">📷</span>
+        <span className="text-base font-semibold">
           {lang === "bn" ? "প্রেসক্রিপশন ছবি আপলোড করুন" : "Upload prescription image"}
         </span>
-        <span className="text-xs text-slate-500">JPG / PNG · max 8 MB</span>
+        <span className="text-xs uppercase tracking-wide text-slate-500">
+          JPG / PNG · max 8 MB
+        </span>
         <input
           type="file"
           accept="image/*"
@@ -49,11 +51,12 @@ export function ImageUploader({ onExtracted }: Props) {
         <img
           src={preview}
           alt="prescription"
-          className="max-h-48 rounded-lg border border-slate-200 object-contain"
+          className="max-h-48 rounded-lg border border-white/40 bg-white/60 object-contain p-2 shadow"
         />
       )}
       {busy && (
-        <div className="text-xs text-slate-500">
+        <div className="flex items-center gap-2 text-xs text-slate-600">
+          <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-indigo-500" />
           {lang === "bn" ? "OCR চলছে..." : "Running OCR..."}
         </div>
       )}

@@ -16,15 +16,19 @@ export function NavBar() {
   const path = usePathname();
 
   return (
-    <header className="sticky top-0 z-30 border-b border-emerald-100 bg-white/80 backdrop-blur">
+    <header className="sticky top-0 z-30 border-b border-white/10 bg-slate-900/40 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-        <Link href="/" className="flex items-center gap-2">
-          <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-600 text-white shadow">
+        <Link href="/" className="flex items-center gap-3">
+          <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-teal-500 text-white shadow-lg">
             ✚
           </span>
           <div className="leading-tight">
-            <div className="font-semibold text-emerald-900">{t("app_title")}</div>
-            <div className="text-xs text-slate-500">{t("app_tagline")}</div>
+            <div className="font-bold tracking-wide gradient-text text-lg">
+              {t("app_title")}
+            </div>
+            <div className="text-[0.7rem] uppercase tracking-[0.18em] text-indigo-200/80">
+              {t("app_tagline")}
+            </div>
           </div>
         </Link>
 
@@ -35,10 +39,10 @@ export function NavBar() {
               <Link
                 key={l.href}
                 href={l.href}
-                className={`rounded-lg px-3 py-1.5 text-sm transition ${
+                className={`rounded-lg px-3 py-1.5 text-sm font-semibold transition ${
                   active
-                    ? "bg-emerald-600 text-white"
-                    : "text-slate-700 hover:bg-emerald-50"
+                    ? "bg-gradient-to-r from-indigo-500 to-teal-500 text-white shadow"
+                    : "text-indigo-100/90 hover:bg-white/10"
                 }`}
               >
                 {t(l.key)}
@@ -47,13 +51,15 @@ export function NavBar() {
           })}
         </nav>
 
-        <div className="flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 p-1 text-xs">
+        <div className="flex items-center gap-1 rounded-lg border border-white/15 bg-white/5 p-1 text-xs">
           {(["en", "bn"] as const).map((l) => (
             <button
               key={l}
               onClick={() => setLang(l)}
-              className={`rounded-md px-2 py-1 ${
-                lang === l ? "bg-white text-emerald-700 shadow" : "text-slate-600"
+              className={`rounded-md px-2 py-1 font-semibold transition ${
+                lang === l
+                  ? "bg-white text-indigo-700 shadow"
+                  : "text-indigo-100/80 hover:bg-white/10"
               }`}
             >
               {l === "en" ? "EN" : "বাংলা"}

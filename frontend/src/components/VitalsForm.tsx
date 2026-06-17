@@ -38,15 +38,19 @@ export function VitalsForm({ value, onChange, onSubmit }: Props) {
           return (
             <label
               key={f.key}
-              className={`rounded-lg border bg-white p-3 text-sm shadow-sm transition ${
-                flag ? levelClass(flag.level) : "border-slate-200"
+              className={`rounded-lg border p-3 text-sm shadow-sm transition backdrop-blur-md ${
+                flag
+                  ? levelClass(flag.level)
+                  : "border-white/40 bg-white/70 text-slate-800"
               }`}
             >
               <div className="mb-1 flex items-center justify-between">
-                <span className="font-medium text-slate-700">
+                <span className="font-semibold text-slate-700">
                   {lang === "bn" ? f.labelBn : f.label}
                 </span>
-                <span className="text-xs text-slate-400">{f.unit}</span>
+                <span className="text-xs uppercase tracking-wide text-slate-400">
+                  {f.unit}
+                </span>
               </div>
               <input
                 type="number"
@@ -56,7 +60,7 @@ export function VitalsForm({ value, onChange, onSubmit }: Props) {
                 max={f.max}
                 value={value[f.key] ?? ""}
                 onChange={(e) => set(f.key, e.target.value)}
-                className="w-full bg-transparent text-lg font-semibold text-slate-900 outline-none placeholder:text-slate-300"
+                className="w-full bg-transparent text-lg font-semibold text-slate-900 outline-none placeholder:text-slate-400"
                 placeholder="—"
               />
               {flag && (
@@ -68,13 +72,11 @@ export function VitalsForm({ value, onChange, onSubmit }: Props) {
       </div>
 
       {onSubmit && (
-        <button
-          type="button"
-          onClick={onSubmit}
-          className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-emerald-700"
-        >
-          {lang === "bn" ? "ট্রায়াজ চালান" : "Run triage"} →
-        </button>
+        <div className="flex justify-end">
+          <button type="button" onClick={onSubmit} className="btn-primary">
+            {lang === "bn" ? "ট্রায়াজ চালান" : "Run triage"} →
+          </button>
+        </div>
       )}
     </div>
   );

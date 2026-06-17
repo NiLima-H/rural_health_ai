@@ -52,13 +52,13 @@ export function VoiceRecorder({ onTranscript }: Props) {
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex flex-wrap items-center gap-3">
       {!recording ? (
         <button
           type="button"
           onClick={start}
           disabled={busy}
-          className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white shadow hover:bg-emerald-700 disabled:opacity-50"
+          className="btn-primary disabled:opacity-50"
         >
           🎤 {lang === "bn" ? "ভয়েস ইনপুট" : "Voice input"}
         </button>
@@ -66,13 +66,14 @@ export function VoiceRecorder({ onTranscript }: Props) {
         <button
           type="button"
           onClick={stop}
-          className="inline-flex animate-pulse items-center gap-2 rounded-lg bg-red-600 px-3 py-1.5 text-sm font-medium text-white shadow"
+          className="inline-flex animate-pulse items-center gap-2 rounded-lg bg-gradient-to-r from-rose-500 to-red-700 px-4 py-2 text-sm font-semibold text-white shadow-lg"
         >
           ◼ {lang === "bn" ? "থামান" : "Stop"}
         </button>
       )}
       {busy && (
-        <span className="text-xs text-slate-500">
+        <span className="flex items-center gap-2 text-xs text-slate-600">
+          <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-indigo-500" />
           {lang === "bn" ? "ট্রান্সক্রাইব হচ্ছে..." : "Transcribing..."}
         </span>
       )}

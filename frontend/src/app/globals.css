@@ -1,1 +1,135 @@
 @import "tailwindcss";
+
+/* ---- Theme tokens ---- */
+@theme inline {
+  --color-bg-from: #0b1437;          /* deep navy */
+  --color-bg-via:  #1e1b4b;          /* indigo */
+  --color-bg-to:   #0f766e;          /* teal */
+
+  --color-brand:        #6366f1;     /* indigo-500 */
+  --color-brand-strong: #4338ca;     /* indigo-700 */
+  --color-brand-soft:   #a5b4fc;     /* indigo-300 */
+
+  --color-surface:        #ffffff;
+  --color-surface-muted:  #f8fafc;
+  --color-ink:            #0f172a;
+  --color-ink-muted:      #475569;
+  --color-border:         #e2e8f0;
+
+  --font-mono: "Courier New", "Courier", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-sans: "Courier New", "Courier", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+:root {
+  color-scheme: light;
+}
+
+/* ---- Base ---- */
+html,
+body {
+  min-height: 100%;
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+}
+
+body {
+  background: linear-gradient(135deg, var(--color-bg-from) 0%, var(--color-bg-via) 50%, var(--color-bg-to) 100%);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ---- Reusable surfaces ---- */
+.glass {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: saturate(180%) blur(8px);
+  -webkit-backdrop-filter: saturate(180%) blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px -10px rgba(2, 6, 23, 0.45);
+}
+
+.glass-dark {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(15, 118, 110, 0.25));
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 16px;
+  color: #f8fafc;
+}
+
+/* ---- Gradient text helper ---- */
+.gradient-text {
+  background: linear-gradient(90deg, #a5b4fc 0%, #67e8f9 50%, #6ee7b7 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ---- Buttons ---- */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.25rem;
+  border-radius: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #fff;
+  background: linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-strong) 100%);
+  box-shadow: 0 8px 20px -8px rgba(67, 56, 202, 0.6);
+  transition: transform 120ms ease, box-shadow 200ms ease, opacity 120ms ease;
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 12px 24px -10px rgba(67, 56, 202, 0.7); }
+.btn-primary:active { transform: translateY(0); }
+.btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1rem;
+  border-radius: 12px;
+  font-weight: 600;
+  color: #e0e7ff;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  transition: background 150ms ease;
+}
+.btn-ghost:hover { background: rgba(255, 255, 255, 0.16); }
+
+/* ---- Form fields ---- */
+.field {
+  width: 100%;
+  padding: 0.6rem 0.85rem;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  background: #fff;
+  color: var(--color-ink);
+  font-family: inherit;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+.field:focus {
+  outline: none;
+  border-color: var(--color-brand);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+}
+
+.label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-ink-muted);
+  margin-bottom: 0.35rem;
+}
+
+/* ---- Section heading ---- */
+.section-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: #f1f5f9;
+  margin-bottom: 0.75rem;
+}
