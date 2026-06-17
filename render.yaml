@@ -1,0 +1,38 @@
+services:
+  - type: web
+    name: ruralcare-backend
+    env: docker
+    rootDir: backend
+    plan: starter
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ruralcare-db
+          property: connectionString
+      - key: PUKU_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: WHISPER_MODEL
+        value: small
+      - key: WHISPER_DEVICE
+        value: cpu
+
+  - type: web
+    name: ruralcare-frontend
+    env: docker
+    rootDir: frontend
+    plan: starter
+    envVars:
+      - key: NEXT_PUBLIC_API_BASE
+        fromService:
+          type: web
+          name: ruralcare-backend
+          property: RENDER_EXTERNAL_URL
+
+databases:
+  - name: ruralcare-db
+    plan: starter
+    databaseName: ruralcare
+    user: postgres
