@@ -14,8 +14,10 @@ services:
         sync: false
       - key: OPENAI_API_KEY
         sync: false
+      - key: OPENAI_MODEL
+        value: gpt-4o-mini
       - key: WHISPER_MODEL
-        value: small
+        value: tiny
       - key: WHISPER_DEVICE
         value: cpu
 
@@ -26,13 +28,10 @@ services:
     plan: starter
     envVars:
       - key: NEXT_PUBLIC_API_BASE
-        fromService:
-          type: web
-          name: ruralcare-backend
-          property: RENDER_EXTERNAL_URL
+        value: https://ruralcare-backend.onrender.com
 
 databases:
   - name: ruralcare-db
     plan: starter
     databaseName: ruralcare
-    user: postgres
+    user: ruralcare_admin
